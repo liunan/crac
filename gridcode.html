@@ -43,7 +43,7 @@
         getCode(120.0001,39.9);
 
         let baiduAK = 'hnmDylimwUfK48d3CDuPuqZEm05U8bmA';
-        const url='https://api.map.baidu.com/geocoder/v2/?address=%E5%8C%97%E4%BA%AC%E5%B8%82%E6%B5%B7%E6%B7%80%E5%8C%BA%E4%B8%8A%E5%9C%B0%E5%8D%81%E8%A1%9710%E5%8F%B7&output=json&ak=hnmDylimwUfK48d3CDuPuqZEm05U8bmA';
+        const url='https://api.map.baidu.com/geocoder/v2/?address=%E5%8C%97%E4%BA%AC%E5%B8%82%E6%B5%B7%E6%B7%80%E5%8C%BA%E4%B8%8A%E5%9C%B0%E5%8D%81%E8%A1%9710%E5%8F%B7&output=json&ak='+baiduAK;
         fetch(url,
             {mode: "cors"
         }).then((res)=>{
