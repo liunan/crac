@@ -1,54 +1,87 @@
 <!doctype html>
 <html lang="zh">
+
 <head>
-  <meta charset="utf-8">
-  <title>编码</title>
-  <base href="/crac/">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <meta charset="utf-8">
+    <title>编码</title>
+    <base href="/crac/">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
 
-<script>
-  
-</script>
-
+    <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+        crossorigin="anonymous"></script>
 </head>
+
 <body>
-    <input type="text" id="address"/>
-    <input type="button" value="查询" />
+    <input type="text" id="address" />
+    <input id="btn_query" type="button" value="查询" />
+    <label id="output"></label>
 
     <script>
-        function index2Char(idx)
-        {
-            return String.fromCharCode( 'A'.charCodeAt(0)+idx);
+        function index2Char(idx) {
+            return String.fromCharCode('A'.charCodeAt(0) + idx);
         }
 
-        function getCode(lon,lat){
-            let lon_in_s = (lon+180)*60;
-            let lat_in_s = (lat+90)*60;
+        function getCode(lon, lat) {
+            let lon_in_s = (lon + 180) * 60;
+            let lat_in_s = (lat + 90) * 60;
 
-            let field1 = Math.floor(lon_in_s/1200);
-            let field2 = Math.floor(lat_in_s/600);
+            let field1 = Math.floor(lon_in_s / 1200);
+            let field2 = Math.floor(lat_in_s / 600);
             console.log(`${field1}-${field2}`);
-            let Field = index2Char(field1)+index2Char(field2);
+            let Field = index2Char(field1) + index2Char(field2);
             console.log(Field);
 
-            let square1 = Math.floor(Math.floor(lon+180)%20/2);
-            let square2 = Math.floor(lat+90)%10;
-            let code = Field + square1+square2;
+            let square1 = Math.floor(Math.floor(lon + 180) % 20 / 2);
+            let square2 = Math.floor(lat + 90) % 10;
+            let code = Field + square1 + square2;
 
             console.log(code);
 
         }
 
-        getCode(120.0001,39.9);
+        getCode(120.0001, 39.9);
 
-        let baiduAK = 'hnmDylimwUfK48d3CDuPuqZEm05U8bmA';
-        const url='https://api.map.baidu.com/geocoder/v2/?address=%E5%8C%97%E4%BA%AC%E5%B8%82%E6%B5%B7%E6%B7%80%E5%8C%BA%E4%B8%8A%E5%9C%B0%E5%8D%81%E8%A1%9710%E5%8F%B7&output=json&ak='+baiduAK;
-        fetch(url,
-            {mode: "no-cors"
-        }).then((res)=>{
-            console.log(res);
-        })
+
+
+
+
+
+        /*
+        参考 跨域问题 参考 https://www.cnblogs.com/dowinning/archive/2012/04/19/json-jsonp-jquery.html
+        */
+
+
+        jQuery(document).ready(function () {
+
+            $('#btn_query').on('click', () => {
+                let input = $('#address').val();
+                console.log('query for ' + input);
+
+                let baiduAK = 'hnmDylimwUfK48d3CDuPuqZEm05U8bmA';
+                let ak = 'hnmDylimwUfK48d3CDuPuqZEm05U8bmA';
+                const url = location.protocol + '//api.map.baidu.com/geocoder/v2/?address='+encodeURIComponent(input)+'&output=json&ak=' + baiduAK;
+
+                $.ajax({
+                    type: "get",
+                    async: false,
+                    url: url,
+                    dataType: "jsonp",
+                    jsonp: "callback",//传递给请求处理程序或页面的，用以获得jsonp回调函数名的参数名(一般默认为:callback)
+                    jsonpCallback: "geoencoder",//自定义的jsonp回调函数名称，默认为jQuery自动生成的随机函数名，也可以写"?"，jQuery会自动为你处理数据
+                    success: function (json) {
+                        //alert('您查询到航班信息：票价： ' + json.price + ' 元，余票： ' + json.tickets + ' 张。');
+                        console.log(json);
+                        $('#output').text(json.result.location.lng + ',' + json.result.location.lat);
+                    },
+                    error: function () {
+                        alert('fail');
+                    }
+                });
+            })
+
+        });
     </script>
 </body>
+
 </html>
