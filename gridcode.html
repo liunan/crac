@@ -16,32 +16,41 @@
     <input type="text" id="address" />
     <input id="btn_query" type="button" value="查询" />
     <label id="output"></label>
+    <div id="map"></div>
 
     <script>
         function index2Char(idx) {
             return String.fromCharCode('A'.charCodeAt(0) + idx);
         }
 
+        /**
+        通过经纬度获取梅登黑德格网编号
+        */
         function getCode(lon, lat) {
-            let lon_in_s = (lon + 180) * 60;
-            let lat_in_s = (lat + 90) * 60;
-
-            let field1 = Math.floor(lon_in_s / 1200);
-            let field2 = Math.floor(lat_in_s / 600);
+            // 计算场(field)
+            let field1 = Math.floor((180+lon) / 20);
+            let field2 = Math.floor((90+lat) / 10);
             console.log(`${field1}-${field2}`);
             let Field = index2Char(field1) + index2Char(field2);
             console.log(Field);
 
+            // 计算方(square)
             let square1 = Math.floor(Math.floor(lon + 180) % 20 / 2);
             let square2 = Math.floor(lat + 90) % 10;
             let code = Field + square1 + square2;
 
+            // 计算块
+            let block1 = Math.floor((lon - Math.floor(lon/2)*2)*60/5);
+            let block2 = Math.floor( (lat - Math.floor(lat)) *60/2.5);
+            console.log(`${block1} - ${block2}`);
+            code = code+index2Char(block1)+index2Char(block2);
+ 
             console.log(code);
 
         }
 
         getCode(120.0001, 39.9);
-
+        
 
 
 
@@ -73,6 +82,8 @@
                         //alert('您查询到航班信息：票价： ' + json.price + ' 元，余票： ' + json.tickets + ' 张。');
                         console.log(json);
                         $('#output').text(json.result.location.lng + ',' + json.result.location.lat);
+
+                        getCode(json.result.location.lng,json.result.location.lat);
                     },
                     error: function () {
                         alert('fail');

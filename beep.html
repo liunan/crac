@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="zh">
+
+<head>
+    <meta charset="utf-8">
+    <title>编码</title>
+    <base href="/crac/">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+
+<body>
+    <input type="button" value="Beep" onclick="a()">
+
+    <script>
+
+        const morseCode = {
+            A:'.-',B:'-...',C:'-.-.',
+            D:'-..',E:'.',F:'..-.',
+            G:'--.',H:'....',
+            I:'..',J:'.---',K:'-.-',
+            L:'.-..',M:'--',N:'-.',
+            O:'---',P:'.--.',Q:'--.-',
+            R:'.-.',S:'..',T:'-',
+            U:'..-',V:'...-',W:'.--',
+            X:'-..-',Y:'-.--',Z:'--..',
+
+            // numbers
+            '1':'.----','2':'..---','3':'...--','4':'....-','5':'.....',
+            '6':'-....','7':'--...','8':'---..','9':'----.', '0':'-----',
+
+            // op
+            '?':'..--..',
+            '=':'-...-',
+            '/':'-..-.',
+            '&':'.-...'
+        }
+
+        //每分钟词数(每个词5个字母)
+        const WPM = 40;
+        const CPM = 5*WPM;
+        const TPM = 4*CPM;
+        // 每分钟时间段数
+        const IIMS = 60*1000/2/TPM;
+
+        console.log(`IIMS = ${IIMS}, CPM = ${CPM}`)
+
+        let DI_LEN = 100;
+
+        //if you have another AudioContext class use that one, as some browsers have a limit
+        var audioCtx = new (window.AudioContext || window.webkitAudioContext || window.audioContext);
+
+        //All arguments are optional:
+
+        //duration of the tone in milliseconds. Default is 500
+        //frequency of the tone in hertz. default is 440
+        //volume of the tone. Default is 1, off is 0.
+        //type of tone. Possible values are sine, square, sawtooth, triangle, and custom. Default is sine.
+        //callback to use on end of tone
+        function beep(duration, frequency, volume, type, callback) {
+            //console.log("beep called")
+            var oscillator = audioCtx.createOscillator();
+            var gainNode = audioCtx.createGain();
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+
+            if (volume) { gainNode.gain.value = volume; };
+            if (frequency) { oscillator.frequency.value = frequency; }
+            if (type) { oscillator.type = type; }
+            if (callback) { oscillator.onended = callback; }
+
+            oscillator.start();
+            setTimeout(function () { oscillator.stop() }, (duration ? duration : 500));
+        };
+
+        function a(){
+            beep(100);
+            setTimeout(beep(300),100);
+        }
+
+        function b(){
+            beep(300);
+            setTimeout(()=>{
+                beep(100);
+                setTimeout(()=>{
+                    beep(100);
+                    setTimeout(beep(100),100);
+                },100)
+            },100)
+        }
+
+        function generateSound(c,interval)
+        {
+            const code = morseCode[c];
+            console.log(code + '@' + code.length);
+            
+            toBeep(code,interval?interval:100);
+
+        }
+        function toBeep(morse,interval){
+                const span = morse[0] =='.'?interval:3*interval;
+                console.log(span);
+                beep(span);
+                if(morse.length>1)
+                    setTimeout( toBeep(morse.substring(1),interval),
+                        span+interval)
+        }
+
+    
+
+
+
+    </script>
+</body>
+
+</html>
